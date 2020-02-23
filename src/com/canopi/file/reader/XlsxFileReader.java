@@ -1,20 +1,16 @@
 package com.canopi.file.reader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,26 +21,22 @@ public class XlsxFileReader {
 
 	private static final Logger logger = LoggerFactory.getLogger(XlsxFileReader.class);
 
-	@SuppressWarnings("resource")
 	public XlsxFileFormat getAllDataFromFile(String path) throws Exception {
 
 		logger.debug("Getting data from file");
+		// Declaring Instances to store data from file
 		XlsxFileFormat xlxsFileFormat = new XlsxFileFormat();
 		List<String> skuList = new ArrayList<>();
 		List<String> startList = new ArrayList<>();
 		List<String> hopList = new ArrayList<>();
 		List<String> endList = new ArrayList<>();
-
-//		File file = new File(path);
-//		FileInputStream fis = new FileInputStream(file);
-//		OPCPackage pkg = OPCPackage.open(new File(path));
-//		XSSFWorkbook wb = new XSSFWorkbook(fis);
-//		XSSFSheet sheet = wb.getSheetAt(0);
-
+		
+		//Creating workbook to get xlsx file
 		Workbook workbook = WorkbookFactory.create(new File(path));
 		Sheet sheet = workbook.getSheetAt(0);
 
 		logger.debug("Fetching data over iteration");
+		//Row Iterator
 		Iterator<Row> rowIterator = sheet.iterator();
 		Row row = rowIterator.next();
 		while (rowIterator.hasNext()) {
@@ -75,13 +67,14 @@ public class XlsxFileReader {
 			xlxsFileFormat.setHopList(hopList);
 			xlxsFileFormat.setEndList(endList);
 		}
-		//pkg.close();
+		logger.debug("Data Acquired");
 		return xlxsFileFormat;
 
 	}
 
 	@SuppressWarnings("null")
 	private boolean checkIfRowIsEmpty(Row row) throws EmptyCellException {
+		//Checking if any cell is null/blank/empty in a row
 		boolean result = false;
 		if (row == null) {
 			return true;
