@@ -1,6 +1,5 @@
 package com.canopi.utility;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -42,9 +41,9 @@ public class FileUtility {
 	}
 
 	//Method to extract list of SKUs for each route
-	public HashMap<String, List<String>> getSkuForEachRoute(XlsxFileFormat xlxsFileFormat) {
+	public HashMap<String, Set<String>> getSkuForEachRoute(XlsxFileFormat xlxsFileFormat) {
 		logger.debug("Getting SKUs for Each Route");
-		Map<String, List<String>> skuForEachRoute = new HashMap<>();
+		Map<String, Set<String>> skuForEachRoute = new HashMap<>();
 		
 		for (int iterator = 0; iterator < xlxsFileFormat.getSkuList().size(); iterator++) {
 			String route = getRouteAsString( xlxsFileFormat.getStartList().get(iterator), xlxsFileFormat.getHopList().get(iterator)
@@ -54,13 +53,13 @@ public class FileUtility {
 				skuForEachRoute.get(route).add(xlxsFileFormat.getSkuList().get(iterator));
 			
 			} else {
-				List<String> skuList = new ArrayList<>();
+				Set<String> skuList = new HashSet<>();
 				skuList.add(xlxsFileFormat.getSkuList().get(iterator));
 				skuForEachRoute.put(route, skuList);
 			}
 		}
 		logger.debug("SKUs for different Routes acquired");
-		return (HashMap<String, List<String>>) skuForEachRoute;
+		return (HashMap<String, Set<String>>) skuForEachRoute;
 	}
 
 	private String getRouteAsString(String start, String hop, String end) {

@@ -1,6 +1,7 @@
 package com.canopi.file.reader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,9 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +21,7 @@ public class XlsxFileReader {
 
 	private static final Logger logger = LoggerFactory.getLogger(XlsxFileReader.class);
 
+	@SuppressWarnings("resource")
 	public XlsxFileFormat getAllDataFromFile(String path) throws Exception {
 
 		logger.debug("Getting data from file");
@@ -32,8 +33,9 @@ public class XlsxFileReader {
 		List<String> endList = new ArrayList<>();
 		
 		//Creating workbook to get xlsx file
-		Workbook workbook = WorkbookFactory.create(new File(path));
-		Sheet sheet = workbook.getSheetAt(0);
+		FileInputStream fis = new FileInputStream(new File(path));
+		XSSFWorkbook wb = new XSSFWorkbook(fis);
+		XSSFSheet sheet = wb.getSheetAt(0);
 
 		logger.debug("Fetching data over iteration");
 		//Row Iterator
@@ -84,7 +86,7 @@ public class XlsxFileReader {
 		}
 		for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
 			Cell cell = row.getCell(cellNum);
-			if (cell == null && cell.getCellTypeEnum() == CellType.BLANK && StringUtils.isEmpty(cell.toString())) {
+			if (cell == null || cell.getCellTypeEnum() == CellType.BLANK || StringUtils.isEmpty(cell.toString())) {
 				logger.error("Empty Cell Found");
 				throw new EmptyCellException("Empty Cell Found");
 			}
